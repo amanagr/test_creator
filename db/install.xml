@@ -14,6 +14,7 @@
         <FIELD NAME="usagecount" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The number times question has been used in a quiz."/>
         <FIELD NAME="subject" TYPE="char" LENGTH="1000" NOTNULL="true" DEFAULT="all" SEQUENCE="false" COMMENT="Subject of the question"/>
         <FIELD NAME="topic" TYPE="char" LENGTH="1000" NOTNULL="true" DEFAULT="all" SEQUENCE="false" COMMENT="Topic of the quesiton"/>
+        <FIELD NAME="subtopic" TYPE="char" LENGTH="1000" NOTNULL="true" DEFAULT="all" SEQUENCE="false" COMMENT="Subtopic of the quesiton"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
