@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '../../../config.php');
 require_once($CFG->dirroot . '/question/editlib.php');
-require_once(__DIR__. '../classes/bank.php');
+require_once(__DIR__ . '/classes/bank.php');
 
 list($thispageurl, $contexts, $cmid, $cm, $module, $pagevars) =
         question_edit_setup('questions', '/question/edit.php');
@@ -12,8 +12,9 @@ if (($lastchanged = optional_param('lastchanged', 0, PARAM_INT)) !== 0) {
     $url->param('lastchanged', $lastchanged);
 }
 $PAGE->set_url($url);
-
-$questionbank = new test_creator_bank_view($contexts, $thispageurl, $COURSE, $cm);
+global $DB;
+$quiz = $DB->get_record('quiz', array('id' => $cm->instance));
+$questionbank = new test_creator_bank_view($contexts, $thispageurl, $COURSE, $cm, $quiz);
 $questionbank->process_actions();
 
 // TODO log this page view.
