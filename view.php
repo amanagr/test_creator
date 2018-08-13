@@ -1,7 +1,6 @@
 <?php
 
 require_once('../../config.php');
-require_once('test_creator_form.php');
 
 global $DB,$CFG;
 
@@ -74,7 +73,7 @@ $moduleinfo = add_moduleinfo($data, $course);
 //  die();
 // print_object($moduleinfo);
 // die();
-$returnurl = new moodle_url("/question/edit.php?cmid=$moduleinfo->coursemodule");
+$returnurl = new moodle_url("/blocks/test_creator/question_bank_view.php?cmid=$moduleinfo->coursemodule");
 // print_object($returnurl);
 // die();
 //http://localhost:8888/moodle/question/edit.php?cmid=3
