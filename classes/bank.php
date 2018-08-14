@@ -1,6 +1,7 @@
 <?php
 require_once(__DIR__.'/../../../mod/quiz/locallib.php');
 require_once(__DIR__.'/search/difficulty_condition.php');
+require_once(__DIR__.'/search/subject_condition.php');
 class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
 
     /**
@@ -30,7 +31,7 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
         }
         echo \html_writer::input_hidden_params($this->baseurl, $excludes);
 
-        $this->searchconditions = array(new \core_question\bank\search\difficulty_condition());
+        $this->searchconditions = array(new \core_question\bank\search\difficulty_condition(),new \core_question\bank\search\subject_condition());
 
         foreach ($this->searchconditions as $searchcondition) {
             echo $searchcondition->display_options($this);

@@ -3,14 +3,14 @@
 namespace core_question\bank\search;
 defined('MOODLE_INTERNAL') || die();
 
-class difficulty_condition extends condition {
+class subject_condition extends condition {
     protected $where;
     protected $params;
-    protected $difficulty;
+    protected $subject;
 
-    public function __construct($selecteddifficulty = "All") {
+    public function __construct($selectedsubject = "All") {
         global $DB;
-        $this->difficulty = $selecteddifficulty;
+        $this->subject = $selectedsubject;
     }
 
     public function where() {
@@ -25,7 +25,7 @@ class difficulty_condition extends condition {
         global $OUTPUT;
 
         
-        $difficultyoptions = array(
+        $subjectoptions = array(
             array(
                 "id" => 0,
                 "name" => "All",
@@ -53,10 +53,8 @@ class difficulty_condition extends condition {
             )
         );
         
-         $jdata['difficultyoptions'] = $difficultyoptions;
-        $json = array(array('id'=>1),array('id'=>2));
-        $arraydata['data'] = $json;
-        echo $OUTPUT->render_from_template('block_test_creator/difficulty_condition', 
+         $jdata['subjectoptions'] = $subjectoptions;
+        echo $OUTPUT->render_from_template('block_test_creator/subject_condition', 
             $jdata);
     }
 }
