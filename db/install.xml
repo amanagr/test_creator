@@ -9,7 +9,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="questionid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the question"/>
         <FIELD NAME="difficulty" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Difficulty level of the question"/>
-        <FIELD NAME="shared" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="enable if question is shared to the organization"/>
+        <FIELD NAME="shared" TYPE="int" NOTNULL="true" LENGTH="1" SEQUENCE="false" COMMENT="enable if question is shared to the organization"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Who created the question?"/>
         <FIELD NAME="usagecount" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The number times question has been used in a quiz."/>
         <FIELD NAME="subject" TYPE="char" LENGTH="1000" NOTNULL="true" DEFAULT="all" SEQUENCE="false" COMMENT="Subject of the question"/>
