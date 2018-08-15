@@ -1,0 +1,95 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core_question/topic_condition
+
+    An auto-complete select box containing a list of available topics to
+    filter the quesiton bank questions by.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * topicoptions A list of available topics
+
+    Example context (json):
+    {
+        "topicoptions": [
+            {
+                "id": 1,
+                "name": "foo",
+                "selected": true
+            },
+            {
+                "id": 2,
+                "name": "bar",
+                "selected": false
+            }
+        ]
+    }
+}}
+<div class="topic-condition-container" data-region="topic-condition-container-{{uniqid}}">
+    <div class="form-group">
+        <select multiple name="qtopicids[]" class="form-control invisible" size="3" data-region="topic-select">
+            {{#topicoptions}}
+                <option {{#selected}}selected{{/selected}} value="{{id}}">{{name}}</option>
+            {{/topicoptions}}
+        </select>
+        {{< core/overlay_loading }}
+            {{$hiddenclass}}{{/hiddenclass}}
+        {{/ core/overlay_loading }}
+    </div>
+</div>
+{{#js}}
+require(
+[
+    'jquery',
+    'core/form-autocomplete'
+],
+function(
+    $,
+    AutoComplete
+) {
+    var root = $('[data-region="topic-condition-container-{{uniqid}}"]');
+    var selectElement = root.find('[data-region="topic-select"]');
+    var loadingContainer = root.find('[data-region="overlay-icon-container"]');
+    var placeholderText = {{#quote}}topic{{/quote}};
+    var noSelectionText = {{#quote}}No topic filter applied{{/quote}};
+
+    AutoComplete.enhance(
+        selectElement, // Element to enhance.
+        false, // Don't allow support for creating new topics.
+        false, // Don't allow AMD module to handle loading new topics.
+        placeholderText, // Placeholder text.
+        false, // Make search case insensitive.
+        true, // Show suggestions for topics.
+        noSelectionText // Text when no topics are selected.
+    ).always(function() {
+        // Hide the loading icon once the autocomplete has initialised.
+        loadingContainer.addClass('hidden');
+    });
+
+    // We need to trigger a form submission because of how the question bank
+    // page handles reloading the questions when an option changes.
+    selectElement.on('change', function() {
+        selectElement.closest('form').submit();
+    });
+});
+{{/js}}

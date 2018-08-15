@@ -2,10 +2,13 @@
 require_once(__DIR__.'/../../../mod/quiz/locallib.php');
 require_once(__DIR__.'/search/difficulty_condition.php');
 require_once(__DIR__.'/search/subject_condition.php');
+require_once(__DIR__.'/search/topic_condition.php');
+require_once(__DIR__.'/search/subtopic_condition.php');
 class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
 
     public function display($tabname, $page, $perpage, $cat,
-            $recurse, $showhidden, $showquestiontext, $tagids = [], $subjectids = []) {
+            $recurse, $showhidden, $showquestiontext, $tagids = [], $subjectids = [], $topicids = [],
+            $subtopicids = []) {
         global $PAGE;
 
         if ($this->process_actions_needing_ui()) {
@@ -18,6 +21,8 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
         // Category selection form.
         $this->display_question_bank_header();
         array_unshift($this->searchconditions, new \core_question\bank\search\difficulty_condition($tagids));
+        array_unshift($this->searchconditions, new \core_question\bank\search\subtopic_condition($subtopicids));
+        array_unshift($this->searchconditions, new \core_question\bank\search\topic_condition($topicids));
         array_unshift($this->searchconditions, new \core_question\bank\search\subject_condition($subjectids));
         $this->display_options_form($showquestiontext);
 
@@ -59,6 +64,20 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
             $index = 0;
             while ($this->baseurl->param("qsubjectids[{$index}]")) {
                 $excludes[] = "qsubjectids[{$index}]";
+                $index++;
+            }
+        }
+        if ($this->baseurl->param('qtopicids[0]')) {
+            $index = 0;
+            while ($this->baseurl->param("qtopicids[{$index}]")) {
+                $excludes[] = "qtopicids[{$index}]";
+                $index++;
+            }
+        }
+        if ($this->baseurl->param('qsubtopicids[0]')) {
+            $index = 0;
+            while ($this->baseurl->param("qsubtopicids[{$index}]")) {
+                $excludes[] = "qsubtopicids[{$index}]";
                 $index++;
             }
         }
