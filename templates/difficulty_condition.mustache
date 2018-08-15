@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template core_question/difficulty_condition
+    @template core_question/tag_condition
 
-    An auto-complete select box containing a list of available difficultys to
+    An auto-complete select box containing a list of available tags to
     filter the quesiton bank questions by.
 
     Classes required for JS:
@@ -27,11 +27,11 @@
     * none
 
     Context variables required for this template:
-    * difficultyoptions A list of available difficultys
+    * tagoptions A list of available tags
 
     Example context (json):
     {
-        "difficultyoptions": [
+        "tagoptions": [
             {
                 "id": 1,
                 "name": "foo",
@@ -45,18 +45,18 @@
         ]
     }
 }}
- <div data-region="difficulty-condition-container-{{uniqid}}">
-    <div class=form-group>
-        <select multiple name="qdifficultyids[]" size="3" data-region="difficulty-select">
-            {{#difficultyoptions}}
-                <option {{#selected}}selected{{/selected}}value="{{id}}">{{name}}</option>
-            {{/difficultyoptions}}
-       </select>
-       {{< core/overlay_loading }}
+<div class="tag-condition-container" data-region="tag-condition-container-{{uniqid}}">
+    <div class="form-group">
+        <select multiple name="qtagids[]" class="form-control invisible" size="3" data-region="tag-select">
+            {{#tagoptions}}
+                <option {{#selected}}selected{{/selected}} value="{{id}}">{{name}}</option>
+            {{/tagoptions}}
+        </select>
+        {{< core/overlay_loading }}
             {{$hiddenclass}}{{/hiddenclass}}
-         {{/ core/overlay_loading }}
+        {{/ core/overlay_loading }}
     </div>
-</div> 
+</div>
 {{#js}}
 require(
 [
@@ -67,21 +67,20 @@ function(
     $,
     AutoComplete
 ) {
-    var root = $('[data-region="difficulty-condition-container-{{uniqid}}"]');
-    var selectElement = root.find('[data-region="difficulty-select"]');
+    var root = $('[data-region="tag-condition-container-{{uniqid}}"]');
+    var selectElement = root.find('[data-region="tag-select"]');
     var loadingContainer = root.find('[data-region="overlay-icon-container"]');
-    var placeholderText = {{#quote}}{{#str}} filterbydifficulty, block_test_creator {{/str}}{{/quote}};
-    var noSelectionText = {{#quote}}{{#str}} nodifficultyfiltersapplied, block_test_creator {{/str}}{{/quote}};
-
+    var placeholderText = {{#quote}}{{#str}} filterbydifficulty, block_test_creator{{/str}}{{/quote}};
+    var noSelectionText = {{#quote}}{{#str}} nodifficultyfiltersapplied, block_test_creator{{/str}}{{/quote}};
 
     AutoComplete.enhance(
         selectElement, // Element to enhance.
-        false, // Don't allow support for creating new difficultys.
-        false, // Don't allow AMD module to handle loading new difficultys.
+        false, // Don't allow support for creating new tags.
+        false, // Don't allow AMD module to handle loading new tags.
         placeholderText, // Placeholder text.
         false, // Make search case insensitive.
-        true, // Show suggestions for difficultys.
-        noSelectionText
+        true, // Show suggestions for tags.
+        noSelectionText // Text when no tags are selected.
     ).always(function() {
         // Hide the loading icon once the autocomplete has initialised.
         loadingContainer.addClass('hidden');

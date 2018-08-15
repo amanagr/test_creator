@@ -4,6 +4,34 @@ require_once(__DIR__.'/search/difficulty_condition.php');
 require_once(__DIR__.'/search/subject_condition.php');
 class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
 
+    public function display($tabname, $page, $perpage, $cat,
+            $recurse, $showhidden, $showquestiontext, $tagids = []) {
+        global $PAGE;
+
+        if ($this->process_actions_needing_ui()) {
+            return;
+        }
+        $editcontexts = $this->contexts->having_one_edit_tab_cap($tabname);
+        list($categoryid, $contextid) = explode(',', $cat);
+        $catcontext = \context::instance_by_id($contextid);
+        $thiscontext = $this->get_most_specific_context();
+        // Category selection form.
+        $this->display_question_bank_header();
+        array_unshift($this->searchconditions, new \core_question\bank\search\difficulty_condition($tagids));
+        // array_unshift($this->searchconditions, new \core_question\bank\search\hidden_condition(!$showhidden));
+        // array_unshift($this->searchconditions, new \core_question\bank\search\category_condition(
+                // $cat, $recurse, $editcontexts, $this->baseurl, $this->course));
+        $this->display_options_form($showquestiontext);
+
+        // Continues with list of questions.
+        $this->display_question_list($editcontexts,
+                $this->baseurl, $cat, $this->cm,
+                null, $page, $perpage, $showhidden, $showquestiontext,
+                $this->contexts->having_cap('moodle/question:add'));
+
+        $PAGE->requires->js_call_amd('core_question/edit_tags', 'init', ['#questionscontainer']);
+    }
+
     /**
      * Display the form with options for which questions are displayed and how they are displayed.
      * @param bool $showquestiontext Display the text of the question within the list.
@@ -31,7 +59,6 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
         }
         echo \html_writer::input_hidden_params($this->baseurl, $excludes);
 
-        $this->searchconditions = array(new \core_question\bank\search\difficulty_condition(),new \core_question\bank\search\subject_condition());
 
         foreach ($this->searchconditions as $searchcondition) {
             echo $searchcondition->display_options($this);
