@@ -45,18 +45,18 @@
         ]
     }
 }}
- <div data-region="subject-condition-container-{{uniqid}}">
-    <div class=form-group>
-        <select name="qsubjectids[]" size="3" data-region="subject-select">
+<div class="subject-condition-container" data-region="subject-condition-container-{{uniqid}}">
+    <div class="form-group">
+        <select multiple name="qsubjectids[]" class="form-control invisible" size="3" data-region="subject-select">
             {{#subjectoptions}}
-                <option value="{{id}}">{{name}}</option>
+                <option {{#selected}}selected{{/selected}} value="{{id}}">{{name}}</option>
             {{/subjectoptions}}
-       </select>
-       {{< core/overlay_loading }}
+        </select>
+        {{< core/overlay_loading }}
             {{$hiddenclass}}{{/hiddenclass}}
-         {{/ core/overlay_loading }}
+        {{/ core/overlay_loading }}
     </div>
-</div> 
+</div>
 {{#js}}
 require(
 [
@@ -70,7 +70,8 @@ function(
     var root = $('[data-region="subject-condition-container-{{uniqid}}"]');
     var selectElement = root.find('[data-region="subject-select"]');
     var loadingContainer = root.find('[data-region="overlay-icon-container"]');
-    var placeholderText = {{#quote}}{{#str}} filterbysubject, block_test_creator {{/str}}{{/quote}};
+    var placeholderText = {{#quote}}Subject{{/quote}};
+    var noSelectionText = {{#quote}}No subject filter applied{{/quote}};
 
     AutoComplete.enhance(
         selectElement, // Element to enhance.
@@ -79,6 +80,7 @@ function(
         placeholderText, // Placeholder text.
         false, // Make search case insensitive.
         true, // Show suggestions for subjects.
+        noSelectionText // Text when no subjects are selected.
     ).always(function() {
         // Hide the loading icon once the autocomplete has initialised.
         loadingContainer.addClass('hidden');

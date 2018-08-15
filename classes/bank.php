@@ -5,7 +5,7 @@ require_once(__DIR__.'/search/subject_condition.php');
 class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
 
     public function display($tabname, $page, $perpage, $cat,
-            $recurse, $showhidden, $showquestiontext, $tagids = []) {
+            $recurse, $showhidden, $showquestiontext, $tagids = [], $subjectids = []) {
         global $PAGE;
 
         if ($this->process_actions_needing_ui()) {
@@ -18,9 +18,7 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
         // Category selection form.
         $this->display_question_bank_header();
         array_unshift($this->searchconditions, new \core_question\bank\search\difficulty_condition($tagids));
-        // array_unshift($this->searchconditions, new \core_question\bank\search\hidden_condition(!$showhidden));
-        // array_unshift($this->searchconditions, new \core_question\bank\search\category_condition(
-                // $cat, $recurse, $editcontexts, $this->baseurl, $this->course));
+        array_unshift($this->searchconditions, new \core_question\bank\search\subject_condition($subjectids));
         $this->display_options_form($showquestiontext);
 
         // Continues with list of questions.
@@ -54,6 +52,13 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
             $index = 0;
             while ($this->baseurl->param("qtagids[{$index}]")) {
                 $excludes[] = "qtagids[{$index}]";
+                $index++;
+            }
+        }
+        if ($this->baseurl->param('qsubjectids[0]')) {
+            $index = 0;
+            while ($this->baseurl->param("qsubjectids[{$index}]")) {
+                $excludes[] = "qsubjectids[{$index}]";
                 $index++;
             }
         }
