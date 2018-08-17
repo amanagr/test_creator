@@ -66,6 +66,7 @@ $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIS
 $quizobj = new quiz($quiz, $cm, $course);
 $structure = $quizobj->get_structure();
 
+
 // You need mod/quiz:manage in addition to question capabilities to access this page.
 require_capability('mod/quiz:manage', $contexts->lowest());
 
