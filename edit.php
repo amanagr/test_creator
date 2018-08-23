@@ -46,6 +46,9 @@ require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 require_once($CFG->dirroot . '/mod/quiz/addrandomform.php');
 require_once($CFG->dirroot . '/question/editlib.php');
 require_once($CFG->dirroot . '/question/category_class.php');
+require_once($CFG->dirroot . '/blocks/test_creator/mod_form.php');
+require_once($CFG->dirroot . '/mod/quiz/classes/structure.php');
+
 
 // These params are only passed from page request to request while we stay on
 // this page otherwise they would go in question_edit_setup.
@@ -60,13 +63,28 @@ $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contexti
 $quizhasattempts = quiz_has_attempts($quiz->id);
 
 $PAGE->set_url($thispageurl);
+//require_once($CFG->dirroot . '/blocks/test_creator/view.php');
 
 // Get the course object and related bits.
 $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
 $quizobj = new quiz($quiz, $cm, $course);
 $structure = $quizobj->get_structure();
-
-
+$structure->add_subject_to_questions();
+$quizslots = $structure->get_slots();
+$quizslotids = array_keys($quizslots);
+$questionidarr = array_keys($structure->get_all_questions());
+for($i=0;$i<sizeof($quizslots);$i++)
+{
+    $dataobject = new stdClass();
+   $dataobject->id = $quizslotids[$i];
+   $dataobject->questionid = $questionidarr[$i];
+   //print_object($dataobject);
+   $DB->update_record('quiz_slots',$dataobject);
+}
+$questionsperpage = 1;
+quiz_repaginate_questions($quiz->id,$questionsperpage);
+//print_object($structure->get_sections());
+$structure->set_sections($quiz);
 // You need mod/quiz:manage in addition to question capabilities to access this page.
 require_capability('mod/quiz:manage', $contexts->lowest());
 
@@ -166,8 +184,18 @@ if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
         quiz_update_all_final_grades($quiz);
         quiz_update_grades($quiz, 0, true);
     }
-
-    redirect($afteractionurl);
+    $questionsperpage = 1;
+    quiz_repaginate_questions($quiz->id, $questionsperpage);
+    // print_object($cm);
+    // print_object($course);
+    // die();
+     // $mform = new test_creator_mod_form('',1,$cm,$course);
+     // $mform->display();
+    //set_sections($structure,$quiz);
+    // set_sections($structure,$quiz);
+    $mform = new test_creator_mod_form();
+    $mform->display();
+    //redirect($afteractionurl);
 }
 
 // Get the question bank view.
@@ -215,3 +243,5 @@ echo $output->edit_page($quizobj, $structure, $contexts, $thispageurl, $pagevars
 echo html_writer::end_tag('div');
 
 echo $OUTPUT->footer();
+
+

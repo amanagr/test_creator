@@ -1,12 +1,11 @@
 <?php
 
 require_once('../../config.php');
-
 global $DB,$CFG;
 
 // Check for all required variables.
 // $courseid = required_param('courseid', PARAM_INT);
-$quiz_name = required_param('name', PARAM_RAW);
+$quiz_name = optional_param('name','Name',PARAM_RAW);
 // $quiz = new stdClass();
 // $quiz->name = $quiz_name;
 // $quiz->intro = '';
@@ -74,6 +73,7 @@ $moduleinfo = add_moduleinfo($data, $course);
 // print_object($moduleinfo);
 // die();
 $returnurl = new moodle_url("/blocks/test_creator/question_bank_view.php?cmid=$moduleinfo->coursemodule");
+//$returnurl->param('moduleinfo',$moduleinfo);
 // print_object($returnurl);
 // die();
 //http://localhost:8888/moodle/question/edit.php?cmid=3
