@@ -193,9 +193,12 @@ if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
      // $mform->display();
     //set_sections($structure,$quiz);
     // set_sections($structure,$quiz);
-    $mform = new test_creator_mod_form();
-    $mform->display();
+    // $mform = new test_creator_mod_form();
+    // $mform->display();
     //redirect($afteractionurl);
+    $edit_quiz_url = new moodle_url('/blocks/test_creator/modedit.php');
+    $edit_quiz_url->param('update', $cmid);
+    redirect($edit_quiz_url);
 }
 
 // Get the question bank view.

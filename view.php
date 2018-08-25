@@ -49,8 +49,16 @@ $data = (object)array(
 	'groupmode' => NOGROUPS,
 	'groupingid' => 0,
 	'availability' => null,
+	'timelimit' => 180*60,
 	'completion' => 0,
 );
+
+$date = new DateTime("now", core_date::get_user_timezone_object());
+$date->setTime(9, 0, 0);
+$data->timeopen = $date->getTimestamp();
+$date->setTime(12, 0, 0);
+$data->timeclose = $date->getTimestamp(); 
+
 $moduleinfo = add_moduleinfo($data, $course);
 // if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 //     print_error('invalidcourse', 'block_test_creator', $courseid);
