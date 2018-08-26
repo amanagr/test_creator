@@ -580,7 +580,29 @@ class mod_quiz_mod_form extends moodleform_mod {
         // $mform->setDefault('grade', $quizconfig->maximumgrade);
 
         // -------------------------------------------------------------------------------
+        $mform->addElement('hidden', 'update', $this->_cm->id);
+        $mform->setType('update', PARAM_INT);
+        $mform->addElement('hidden', 'modulename', $this->_cm->modname);
         $this->add_action_buttons();
+        $mform->addElement('hidden', 'course', $this->_course->id);
+        $mform->setType('course', PARAM_INT);
+
+        $mform->addElement('hidden', 'coursemodule', $this->_cm->id);
+        $mform->setType('coursemodule', PARAM_INT);
+
+        $mform->addElement('hidden', 'section', $this->current->section);
+        $mform->setType('section', PARAM_INT);
+
+        $mform->addElement('hidden', 'module', $this->current->module);
+        $mform->setType('module', PARAM_INT);
+
+        $mform->addElement('hidden', 'instance', $this->current->instance);
+        $mform->setType('instance', PARAM_INT);
+
+        $mform->addElement('hidden', 'quizpassword', '');
+        $mform->addElement('hidden', 'visible', 1);
+        $mform->addElement('hidden', 'visibleoncoursepage', 1);
+
 
         $PAGE->requires->yui_module('moodle-mod_quiz-modform', 'M.mod_quiz.modform.init');
     }
@@ -705,93 +727,93 @@ class mod_quiz_mod_form extends moodleform_mod {
     }
 
     public function validation($data, $files) {
-        $errors = parent::validation($data, $files);
+        // $errors = parent::validation($data, $files);
 
-        // Check open and close times are consistent.
-        if ($data['timeopen'] != 0 && $data['timeclose'] != 0 &&
-                $data['timeclose'] < $data['timeopen']) {
-            $errors['timeclose'] = get_string('closebeforeopen', 'quiz');
-        }
+        // // Check open and close times are consistent.
+        // if ($data['timeopen'] != 0 && $data['timeclose'] != 0 &&
+        //         $data['timeclose'] < $data['timeopen']) {
+        //     $errors['timeclose'] = get_string('closebeforeopen', 'quiz');
+        // }
 
-        // Check that the grace period is not too short.
-        if ($data['overduehandling'] == 'graceperiod') {
-            $graceperiodmin = get_config('quiz', 'graceperiodmin');
-            if ($data['graceperiod'] <= $graceperiodmin) {
-                $errors['graceperiod'] = get_string('graceperiodtoosmall', 'quiz', format_time($graceperiodmin));
-            }
-        }
+        // // Check that the grace period is not too short.
+        // if ($data['overduehandling'] == 'graceperiod') {
+        //     $graceperiodmin = get_config('quiz', 'graceperiodmin');
+        //     if ($data['graceperiod'] <= $graceperiodmin) {
+        //         $errors['graceperiod'] = get_string('graceperiodtoosmall', 'quiz', format_time($graceperiodmin));
+        //     }
+        // }
 
-        if (array_key_exists('completion', $data) && $data['completion'] == COMPLETION_TRACKING_AUTOMATIC) {
-            $completionpass = isset($data['completionpass']) ? $data['completionpass'] : $this->current->completionpass;
+        // if (array_key_exists('completion', $data) && $data['completion'] == COMPLETION_TRACKING_AUTOMATIC) {
+        //     $completionpass = isset($data['completionpass']) ? $data['completionpass'] : $this->current->completionpass;
 
-            // Show an error if require passing grade was selected and the grade to pass was set to 0.
-            if ($completionpass && (empty($data['gradepass']) || grade_floatval($data['gradepass']) == 0)) {
-                if (isset($data['completionpass'])) {
-                    $errors['completionpassgroup'] = get_string('gradetopassnotset', 'quiz');
-                } else {
-                    $errors['gradepass'] = get_string('gradetopassmustbeset', 'quiz');
-                }
-            }
-        }
+        //     // Show an error if require passing grade was selected and the grade to pass was set to 0.
+        //     if ($completionpass && (empty($data['gradepass']) || grade_floatval($data['gradepass']) == 0)) {
+        //         if (isset($data['completionpass'])) {
+        //             $errors['completionpassgroup'] = get_string('gradetopassnotset', 'quiz');
+        //         } else {
+        //             $errors['gradepass'] = get_string('gradetopassmustbeset', 'quiz');
+        //         }
+        //     }
+        // }
 
-        // Check the boundary value is a number or a percentage, and in range.
-        $i = 0;
-        while (!empty($data['feedbackboundaries'][$i] )) {
-            $boundary = trim($data['feedbackboundaries'][$i]);
-            if (strlen($boundary) > 0) {
-                if ($boundary[strlen($boundary) - 1] == '%') {
-                    $boundary = trim(substr($boundary, 0, -1));
-                    if (is_numeric($boundary)) {
-                        $boundary = $boundary * $data['grade'] / 100.0;
-                    } else {
-                        $errors["feedbackboundaries[$i]"] =
-                                get_string('feedbackerrorboundaryformat', 'quiz', $i + 1);
-                    }
-                } else if (!is_numeric($boundary)) {
-                    $errors["feedbackboundaries[$i]"] =
-                            get_string('feedbackerrorboundaryformat', 'quiz', $i + 1);
-                }
-            }
-            if (is_numeric($boundary) && $boundary <= 0 || $boundary >= $data['grade'] ) {
-                $errors["feedbackboundaries[$i]"] =
-                        get_string('feedbackerrorboundaryoutofrange', 'quiz', $i + 1);
-            }
-            if (is_numeric($boundary) && $i > 0 &&
-                    $boundary >= $data['feedbackboundaries'][$i - 1]) {
-                $errors["feedbackboundaries[$i]"] =
-                        get_string('feedbackerrororder', 'quiz', $i + 1);
-            }
-            $data['feedbackboundaries'][$i] = $boundary;
-            $i += 1;
-        }
-        $numboundaries = $i;
+        // // Check the boundary value is a number or a percentage, and in range.
+        // $i = 0;
+        // while (!empty($data['feedbackboundaries'][$i] )) {
+        //     $boundary = trim($data['feedbackboundaries'][$i]);
+        //     if (strlen($boundary) > 0) {
+        //         if ($boundary[strlen($boundary) - 1] == '%') {
+        //             $boundary = trim(substr($boundary, 0, -1));
+        //             if (is_numeric($boundary)) {
+        //                 $boundary = $boundary * $data['grade'] / 100.0;
+        //             } else {
+        //                 $errors["feedbackboundaries[$i]"] =
+        //                         get_string('feedbackerrorboundaryformat', 'quiz', $i + 1);
+        //             }
+        //         } else if (!is_numeric($boundary)) {
+        //             $errors["feedbackboundaries[$i]"] =
+        //                     get_string('feedbackerrorboundaryformat', 'quiz', $i + 1);
+        //         }
+        //     }
+        //     if (is_numeric($boundary) && $boundary <= 0 || $boundary >= $data['grade'] ) {
+        //         $errors["feedbackboundaries[$i]"] =
+        //                 get_string('feedbackerrorboundaryoutofrange', 'quiz', $i + 1);
+        //     }
+        //     if (is_numeric($boundary) && $i > 0 &&
+        //             $boundary >= $data['feedbackboundaries'][$i - 1]) {
+        //         $errors["feedbackboundaries[$i]"] =
+        //                 get_string('feedbackerrororder', 'quiz', $i + 1);
+        //     }
+        //     $data['feedbackboundaries'][$i] = $boundary;
+        //     $i += 1;
+        // }
+        // $numboundaries = $i;
 
-        // Check there is nothing in the remaining unused fields.
-        if (!empty($data['feedbackboundaries'])) {
-            for ($i = $numboundaries; $i < count($data['feedbackboundaries']); $i += 1) {
-                if (!empty($data['feedbackboundaries'][$i] ) &&
-                        trim($data['feedbackboundaries'][$i] ) != '') {
-                    $errors["feedbackboundaries[$i]"] =
-                            get_string('feedbackerrorjunkinboundary', 'quiz', $i + 1);
-                }
-            }
-        }
-        for ($i = $numboundaries + 1; $i < count($data['feedbacktext']); $i += 1) {
-            if (!empty($data['feedbacktext'][$i]['text']) &&
-                    trim($data['feedbacktext'][$i]['text'] ) != '') {
-                $errors["feedbacktext[$i]"] =
-                        get_string('feedbackerrorjunkinfeedback', 'quiz', $i + 1);
-            }
-        }
+        // // Check there is nothing in the remaining unused fields.
+        // if (!empty($data['feedbackboundaries'])) {
+        //     for ($i = $numboundaries; $i < count($data['feedbackboundaries']); $i += 1) {
+        //         if (!empty($data['feedbackboundaries'][$i] ) &&
+        //                 trim($data['feedbackboundaries'][$i] ) != '') {
+        //             $errors["feedbackboundaries[$i]"] =
+        //                     get_string('feedbackerrorjunkinboundary', 'quiz', $i + 1);
+        //         }
+        //     }
+        // }
+        // for ($i = $numboundaries + 1; $i < count($data['feedbacktext']); $i += 1) {
+        //     if (!empty($data['feedbacktext'][$i]['text']) &&
+        //             trim($data['feedbacktext'][$i]['text'] ) != '') {
+        //         $errors["feedbacktext[$i]"] =
+        //                 get_string('feedbackerrorjunkinfeedback', 'quiz', $i + 1);
+        //     }
+        // }
 
-        // If CBM is involved, don't show the warning for grade to pass being larger than the maximum grade.
-        if (($data['preferredbehaviour'] == 'deferredcbm') OR ($data['preferredbehaviour'] == 'immediatecbm')) {
-            unset($errors['gradepass']);
-        }
-        // Any other rule plugins.
-        $errors = quiz_access_manager::validate_settings_form_fields($errors, $data, $files, $this);
+        // // If CBM is involved, don't show the warning for grade to pass being larger than the maximum grade.
+        // if (($data['preferredbehaviour'] == 'deferredcbm') OR ($data['preferredbehaviour'] == 'immediatecbm')) {
+        //     unset($errors['gradepass']);
+        // }
+        // // Any other rule plugins.
+        // $errors = quiz_access_manager::validate_settings_form_fields($errors, $data, $files, $this);
 
-        return $errors;
+        // return $errors;
     }
 
     /**
