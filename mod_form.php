@@ -583,6 +583,7 @@ class mod_quiz_mod_form extends moodleform_mod {
         $mform->addElement('hidden', 'update', $this->_cm->id);
         $mform->setType('update', PARAM_INT);
         $mform->addElement('hidden', 'modulename', $this->_cm->modname);
+        $mform->setType('modulename', PARAM_TEXT);
         $this->add_action_buttons();
         $mform->addElement('hidden', 'course', $this->_course->id);
         $mform->setType('course', PARAM_INT);
@@ -600,10 +601,17 @@ class mod_quiz_mod_form extends moodleform_mod {
         $mform->setType('instance', PARAM_INT);
 
         $mform->addElement('hidden', 'quizpassword', '');
+        $mform->setType('quizpassword', PARAM_TEXT);
         $mform->addElement('hidden', 'visible', 1);
+        $mform->setType('visible', PARAM_INT);
         $mform->addElement('hidden', 'visibleoncoursepage', 1);
+        $mform->setType('visibleoncoursepage', PARAM_INT);
 
+        $mform->addElement('hidden', 'graceperiod', 0);
+        $mform->setType('graceperiod', PARAM_INT);
 
+        $mform->addElement('hidden', 'questiondecimalpoints', 0);
+        $mform->setType('questiondecimalpoints', PARAM_INT);
         $PAGE->requires->yui_module('moodle-mod_quiz-modform', 'M.mod_quiz.modform.init');
     }
 
@@ -656,8 +664,7 @@ class mod_quiz_mod_form extends moodleform_mod {
             // Convert to a real number, so we don't get 0.0000.
             $toform['grade'] = $toform['grade'] + 0;
         }
-
-        if (count($this->_feedbacks)) {
+        if (!empty($this->_feedbacks) && count($this->_feedbacks)) {
             $key = 0;
             foreach ($this->_feedbacks as $feedback) {
                 $draftid = file_get_submitted_draft_itemid('feedbacktext['.$key.']');
