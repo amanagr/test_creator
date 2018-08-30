@@ -76,7 +76,7 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
      * @param bool $showtextoption whether to include the 'Show question text' checkbox.
      */
     protected function display_options_form($showquestiontext, $scriptpath = '/blocks/test_creator/question_bank_view.php',
-            $showtextoption = true) {
+            $showtextoption = true, $show_shared = false) {
         global $PAGE;
 
         echo \html_writer::start_tag('form', array('method' => 'get',
@@ -124,12 +124,22 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
         // if ($showtextoption) {
         //     $this->display_showtext_checkbox($showquestiontext);
         // }
+        $this->display_show_shared_checkbox($show_shared);
         $this->display_advanced_search_form();
         $go = \html_writer::empty_tag('input', array('type' => 'submit', 'value' => get_string('go')));
         echo \html_writer::tag('noscript', \html_writer::div($go), array('class' => 'inline'));
         echo \html_writer::end_div();
         echo \html_writer::end_tag('form');
         $PAGE->requires->yui_module('moodle-question-searchform', 'M.question.searchform.init');
+    }
+
+    public function display_show_shared_checkbox($show_shared) {
+        echo '<div>';
+        echo \html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'qbshowshared',
+                                               'value' => 0, 'id' => 'qbshowshared_off'));
+        echo \html_writer::checkbox('qbshowshared', '1', $show_shared, '&nbsp; Show shared queestions',
+                                       array('id' => 'qbshowshared_on', 'class' => 'searchoptions'));
+        echo "</div>\n";
     }
 
 }
