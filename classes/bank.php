@@ -4,6 +4,7 @@ require_once(__DIR__.'/search/difficulty_condition.php');
 require_once(__DIR__.'/search/subject_condition.php');
 require_once(__DIR__.'/search/topic_condition.php');
 require_once(__DIR__.'/search/subtopic_condition.php');
+require_once(__DIR__.'/search/show_shared_condition.php');
 class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
 
     protected function wanted_columns() {
@@ -42,7 +43,7 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
 
     public function display($tabname, $page, $perpage, $cat,
             $recurse, $showhidden, $showquestiontext, $tagids = [], $subjectids = [], $topicids = [],
-            $subtopicids = []) {
+            $subtopicids = [], $show_shared = false) {
         global $PAGE;
 
         if ($this->process_actions_needing_ui()) {
@@ -58,7 +59,8 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
         array_unshift($this->searchconditions, new \core_question\bank\search\subtopic_condition($subtopicids));
         array_unshift($this->searchconditions, new \core_question\bank\search\topic_condition($topicids));
         array_unshift($this->searchconditions, new \core_question\bank\search\subject_condition($subjectids));
-        $this->display_options_form($showquestiontext);
+        array_unshift($this->searchconditions, new \core_question\bank\search\show_shared_condition($show_shared));
+        $this->display_options_form($showquestiontext, '/blocks/test_creator/question_bank_view.php', true, $show_shared);
 
         // Continues with list of questions.
         $this->display_question_list($editcontexts,
@@ -137,7 +139,7 @@ class test_creator_bank_view extends \mod_quiz\question\bank\custom_view{
         echo '<div>';
         echo \html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'qbshowshared',
                                                'value' => 0, 'id' => 'qbshowshared_off'));
-        echo \html_writer::checkbox('qbshowshared', '1', $show_shared, '&nbsp; Show shared queestions',
+        echo \html_writer::checkbox('qbshowshared', '1', $show_shared, '&nbsp; Show shared questions',
                                        array('id' => 'qbshowshared_on', 'class' => 'searchoptions'));
         echo "</div>\n";
     }
