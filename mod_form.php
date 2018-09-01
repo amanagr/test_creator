@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/login/lib.php');
 
 
 /**
@@ -584,7 +585,13 @@ class mod_quiz_mod_form extends moodleform_mod {
         $mform->setType('update', PARAM_INT);
         $mform->addElement('hidden', 'modulename', $this->_cm->modname);
         $mform->setType('modulename', PARAM_TEXT);
-        $this->add_action_buttons();
+
+        # Get last accessed course
+        $lastaccesscourse = get_last_course_id(); 
+        $mform->addElement('hidden', 'lastaccesscourse', $lastaccesscourse);
+        $mform->setType('lastaccesscourse', PARAM_INT);
+        $course = $DB->get_record_select('course', "id=$lastaccesscourse");
+        $this->add_action_buttons(False, "Make quiz for $course->fullname", "Select Batch");
         $mform->addElement('hidden', 'course', $this->_course->id);
         $mform->setType('course', PARAM_INT);
 
