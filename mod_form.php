@@ -581,6 +581,18 @@ class mod_quiz_mod_form extends moodleform_mod {
         // $mform->setDefault('grade', $quizconfig->maximumgrade);
 
         // -------------------------------------------------------------------------------
+        global $USER, $DB;
+        $course_contexts = $DB->get_records_select("role_assignments", "userid = $USER->id AND roleid < 5");
+        $courses_available = array();
+        foreach($course_contexts as $id => $value) {
+            $courseid = $DB->get_record_select("context", "id = $value->contextid")->instanceid;
+            $courses_available[$courseid] = $DB->get_record_select("course", "id = $courseid")->fullname;
+        }
+        $mform->addElement('select', 'select_courses', 'Select batches <br> by pressing Ctrl(on windows)/Command(on mac)', $courses_available);
+        $mform->getElement('select_courses')->setMultiple(true);
+        // This will select the skills A and B.
+        $mform->getElement('select_courses')->setSelected(array('val1', 'val2'));
+
         $mform->addElement('hidden', 'update', $this->_cm->id);
         $mform->setType('update', PARAM_INT);
         $mform->addElement('hidden', 'modulename', $this->_cm->modname);
@@ -590,8 +602,14 @@ class mod_quiz_mod_form extends moodleform_mod {
         $lastaccesscourse = get_last_course_id(); 
         $mform->addElement('hidden', 'lastaccesscourse', $lastaccesscourse);
         $mform->setType('lastaccesscourse', PARAM_INT);
-        $course = $DB->get_record_select('course', "id=$lastaccesscourse");
-        $this->add_action_buttons(False, "Make quiz for $course->fullname", "Select Batch");
+        if ($lastaccesscourse != 0) {
+            $course = $DB->get_record_select('course', "id=$lastaccesscourse");
+            $button_text = "Make quiz for $course->fullname";
+        } else {
+            $button_text = "Disabled Button";
+        }
+
+        $this->add_action_buttons(False, $button_text, "Make quiz for selected batches");
         $mform->addElement('hidden', 'course', $this->_course->id);
         $mform->setType('course', PARAM_INT);
 
@@ -619,6 +637,14 @@ class mod_quiz_mod_form extends moodleform_mod {
 
         $mform->addElement('hidden', 'questiondecimalpoints', 0);
         $mform->setType('questiondecimalpoints', PARAM_INT);
+
+        $mform->addElement('hidden', 'cmidnumber', $this->_cm->id);
+        $mform->setType('cmidnumber', PARAM_INT);
+
+        $mform->addElement('hidden', 'decimalpoints', $this->_cm->id);
+        $mform->setType('decimalpoints', PARAM_INT);
+
+
         $PAGE->requires->yui_module('moodle-mod_quiz-modform', 'M.mod_quiz.modform.init');
     }
 

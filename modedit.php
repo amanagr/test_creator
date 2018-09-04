@@ -159,6 +159,8 @@ if ($mform->is_cancelled()) {
     }
 
     if (isset($fromform->submitbutton)) {
+        print_object("SUBMITE");
+        die();
         $url = new moodle_url("/mod/$module->name/view.php", array('id' => $fromform->coursemodule, 'forceview' => 1));
         if (empty($fromform->showgradingmanagement)) {
             redirect($url);
@@ -166,7 +168,15 @@ if ($mform->is_cancelled()) {
             redirect($fromform->gradingman->get_management_url($url));
         }
     } else {
-        redirect(course_get_url($course, $cw->section, array('sr' => $sectionreturn)));
+        $course_id = $fromform->lastaccesscourse;
+        if($course_id == 0) {
+            $edit_quiz_url = new moodle_url('/blocks/test_creator/modedit.php');
+            $edit_quiz_url->param('update', $cm->id);
+            redirect($edit_quiz_url);
+        } else {
+            print_object($fromform);
+            die();
+        }
     }
     exit;
 
