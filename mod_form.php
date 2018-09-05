@@ -599,17 +599,17 @@ class mod_quiz_mod_form extends moodleform_mod {
         $mform->setType('modulename', PARAM_TEXT);
 
         # Get last accessed course
-        $lastaccesscourse = get_last_course_id(); 
-        $mform->addElement('hidden', 'lastaccesscourse', $lastaccesscourse);
-        $mform->setType('lastaccesscourse', PARAM_INT);
-        if ($lastaccesscourse != 0) {
-            $course = $DB->get_record_select('course', "id=$lastaccesscourse");
-            $button_text = "Make quiz for $course->fullname";
-        } else {
-            $button_text = "Disabled Button";
-        }
+        // $lastaccesscourse = get_last_course_id(); 
+        // $mform->addElement('hidden', 'lastaccesscourse', $lastaccesscourse);
+        // $mform->setType('lastaccesscourse', PARAM_INT);
+        // if ($lastaccesscourse != 0) {
+        //     $course = $DB->get_record_select('course', "id=$lastaccesscourse");
+        //     $button_text = "Make quiz for $course->fullname";
+        // } else {
+        //     $button_text = "Disabled Button";
+        // }
 
-        $this->add_action_buttons(False, $button_text, "Make quiz for selected batches");
+        $this->add_action_buttons(False, "Make quiz for selected batches");
         $mform->addElement('hidden', 'course', $this->_course->id);
         $mform->setType('course', PARAM_INT);
 

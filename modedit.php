@@ -159,14 +159,25 @@ if ($mform->is_cancelled()) {
     }
 
     if (isset($fromform->submitbutton)) {
-        print_object("SUBMITE");
-        die();
-        $url = new moodle_url("/mod/$module->name/view.php", array('id' => $fromform->coursemodule, 'forceview' => 1));
-        if (empty($fromform->showgradingmanagement)) {
-            redirect($url);
-        } else {
-            redirect($fromform->gradingman->get_management_url($url));
-        }
+        $meta_data = array(
+            'customint1' => (array)$fromform->select_courses,
+            'customint2' => 0,
+            'id' => 0,
+            'courseid' => $course->id,
+            'type' => 'meta',
+            'submitbutton' => $fromform->submitbutton,
+        );
+        require_once($CFG->dirroot."/enrol/meta/lib.php"); 
+        $meta_class = new enrol_meta_plugin();
+        $meta_class->add_instance($course, $meta_data);
+        $returnurl = new moodle_url("/course/view.php?id=$course->id");
+        redirect($returnurl);
+        // $url = new moodle_url("/mod/$module->name/view.php", array('id' => $fromform->coursemodule, 'forceview' => 1));
+        // if (empty($fromform->showgradingmanagement)) {
+        //     redirect($url);
+        // } else {
+        //     redirect($fromform->gradingman->get_management_url($url));
+        // }
     } else {
         $course_id = $fromform->lastaccesscourse;
         if($course_id == 0) {
@@ -174,7 +185,7 @@ if ($mform->is_cancelled()) {
             $edit_quiz_url->param('update', $cm->id);
             redirect($edit_quiz_url);
         } else {
-            print_object($fromform);
+            print_object("HOLA");
             die();
         }
     }

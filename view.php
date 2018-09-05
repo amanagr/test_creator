@@ -24,7 +24,7 @@ $quiz_name = optional_param('name','Name',PARAM_RAW);
 // $quiz->timemodified=time();
 // $quiz->timecreated=time();
 require_once($CFG->dirroot.'/course/lib.php');
-
+require_once($CFG->dirroot.'/course/modlib.php');
 // $course = get_course(2);
 
 // $data = (object)array(
@@ -96,8 +96,40 @@ $course = (object)array(
 
 $course = create_course((object) $course);
 
-print_object($course);
-die();
+
+$data = (object)array(
+	'name' => $quiz_name,
+	'intro' => 'Course information here.',
+	'course' => $course->id,
+	'introformat' => 1,
+	'visible' => 1,
+	'overduehandling' => 'autosubmit',
+	'preferredbehaviour' => 'deferredfeedback',
+	'timemodified' => time(),
+	'quizpassword' => '',
+	'timeopen' => 0,
+	'timeclose' => 0,
+	'grade' => 0,
+	'questiondecimalpoints' => 2,
+	'timecreated' => time(),
+	'module' =>  $DB->get_field('modules', 'id', array('name' => 'quiz')),
+	'modulename' => 'quiz',
+	'section' => 1,
+	'cmidnumber' => '',
+	'groupmode' => NOGROUPS,
+	'groupingid' => 0,
+	'availability' => null,
+	'timelimit' => 180*60,
+	'completion' => 0,
+);
+
+$date = new DateTime("now", core_date::get_user_timezone_object());
+$date->setTime(9, 0, 0);
+$data->timeopen = $date->getTimestamp();
+$date->setTime(12, 0, 0);
+$data->timeclose = $date->getTimestamp(); 
+
+$moduleinfo = add_moduleinfo($data, $course);
 // /**
 //  * Create  courses
 //  *
